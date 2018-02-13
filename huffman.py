@@ -21,13 +21,9 @@ class HuffmanTree:
             third.left = first
             third.right = second
             self.tree_ptr = third
-            print third.left, third.right
             first.parent = third
             second.parent = third
             self.pq.insert_min_heap(third)
-        print self.tree_ptr.data
-        print self.tree_ptr.left.data
-        print self.tree_ptr.right.data
         self.walk_huffman_tree(self.tree_ptr)
         return self.codewords
 
@@ -46,11 +42,7 @@ class HuffmanTree:
         if len(arr)>0:
             arr.pop()
 
-
-
-
 if __name__ == '__main__':
     obj = HuffmanTree([(8,'0110'), (9,'1111'), (12,'0000'), (10,'1101'), (13,'1100'), (15,'1011'), (17,'1111')])
     obj.get_codewords()
-    obj.walk_huffman_tree(obj.tree_ptr)
     print obj.codewords

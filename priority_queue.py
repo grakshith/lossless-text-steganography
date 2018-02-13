@@ -45,7 +45,6 @@ class PriorityQueue:
 
 	def build_min_heap(self):
 		for i in range((self.heap_size-1)/2, -1, -1):
-			print i
 			self.min_heapify( i)
 
 	def get_heap(self):
@@ -71,7 +70,6 @@ if __name__ == '__main__':
 						TreeNode((10,'1101')), TreeNode((13,'1100')), TreeNode((15,'1011')),
 						TreeNode((17,'1111'))])
 	obj.build_min_heap()
-	# obj.insert_min_heap(6)
 	print obj.get_heap()
 	print obj.extract_minimum().data
 	print obj.get_heap()
