@@ -1,4 +1,4 @@
-import huffman
+from huffman import HuffmanTree
 
 class SecretMessage:
 	def __init__(self, message):
@@ -24,9 +24,12 @@ class SecretMessage:
 				freq_table[symbol] = 1
 		symbol_tup_list = []
 		for symbol in freq_table:
-			symbol_tup_list.append((symbol,freq_table[symbol]))
+			symbol_tup_list.append((freq_table[symbol], symbol))
 
-		self.codewords = huffman.codebook(symbol_tup_list)
+		print symbol_tup_list
+		huff_tree = HuffmanTree(symbol_tup_list)
+		self.codewords = huff_tree.get_codewords()
+		print self.codewords
 		self.d_codewords = {self.codewords[key]:key for key in self.codewords}
 		self.message = ''.join(self.codewords[symbol] for symbol in self.symbol_list)
 		return self.message

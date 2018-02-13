@@ -77,7 +77,7 @@ if __name__ == '__main__':
 	print obj.get_heap()
 	print obj.extract_minimum().data
 	print obj.get_heap()
-	print obj.extract_minimum().data
+	print obj.extract_minimum()
 	print obj.get_heap()
 	obj.insert_min_heap(TreeNode((6,'1110')))
 	print obj.get_heap()
