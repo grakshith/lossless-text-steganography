@@ -19,7 +19,7 @@ class PriorityQueue:
 		self.heap[0] = self.heap[self.heap_size-1]
 		self.heap_size = self.heap_size-1
 		self.min_heapify(0)
-		return min
+		return heap_min
 
 	def min_heapify(self, i):
 		l = 2*i+1
@@ -62,6 +62,15 @@ class PriorityQueue:
 if __name__ == '__main__':
 	obj = PriorityQueue([8, 9, 12, 10, 13, 15, 17])
 	obj.build_min_heap()
-	obj.insert_min_heap(6)
+	# obj.insert_min_heap(6)
 	print obj.heap
+	print obj.extract_minimum()
+	print obj.heap
+	print obj.extract_minimum()
+	print obj.heap
+	print obj.extract_minimum()
+	print obj.heap
+	obj.insert_min_heap(6)
+	print obj.heap	
+	
 	
