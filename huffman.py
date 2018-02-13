@@ -28,7 +28,8 @@ class HuffmanTree:
         print self.tree_ptr.data
         print self.tree_ptr.left.data
         print self.tree_ptr.right.data
-        # self.walk_huffman_tree(self.tree_ptr)
+        self.walk_huffman_tree(self.tree_ptr)
+        return self.codewords
 
     def walk_huffman_tree(self, root, arr=[]):
         if root.left:
@@ -41,6 +42,9 @@ class HuffmanTree:
 
         if not (root.left and root.right):
             self.codewords[root.data[1]] = ''.join(map(str,arr))
+
+        if len(arr)>0:
+            arr.pop()
 
 
 
