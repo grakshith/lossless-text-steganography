@@ -1,4 +1,5 @@
 from huffman import HuffmanTree
+import RSA
 
 class SecretMessage:
 	def __init__(self, message):
@@ -14,8 +15,10 @@ class SecretMessage:
 		return self.symbol_list
 
 	def encode(self):
-		binary = self.string_to_binary()
-		self.symbol_list = self.make_symbol_list(binary, 4)
+		# binary = self.string_to_binary()
+		# binary = '010000010111010101110100011010000110111101110010001000000100100101000100001110100010000000110001001100000011000000110001'
+		# self.symbol_list = self.make_symbol_list(binary, 7)
+		print "Symbol List : {}".format(self.symbol_list)
 		freq_table = {}
 		for symbol in self.symbol_list:
 			if freq_table.get(symbol):
@@ -45,12 +48,17 @@ class SecretMessage:
 				j=0
 			else:
 				j = j+1
-		self.message = ''.join(decoded)
+		self.message = decoded
 		return self.message
 
 
 if __name__ == '__main__':
-	obj = SecretMessage("AAA")
-	print obj.string_to_binary()
+	obj = SecretMessage("My name is rakshith")
+	key = RSA.generate_key_pair(10)	
+	obj.symbol_list = RSA.encrypt(key[0], obj.message)
+
+	# print obj.string_to_binary()
 	print obj.encode()
-	print obj.decode()
+	print ''.join(map(chr,RSA.decrypt(key[1], obj.decode())))
+	
+
