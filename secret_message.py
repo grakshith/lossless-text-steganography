@@ -18,7 +18,7 @@ class SecretMessage:
 		# binary = self.string_to_binary()
 		# binary = '010000010111010101110100011010000110111101110010001000000100100101000100001110100010000000110001001100000011000000110001'
 		# self.symbol_list = self.make_symbol_list(binary, 7)
-		print "Symbol List : {}".format(self.symbol_list)
+		# print "Symbol List : {}".format(self.symbol_list)
 		freq_table = {}
 		for symbol in self.symbol_list:
 			if freq_table.get(symbol):
@@ -28,10 +28,12 @@ class SecretMessage:
 		symbol_tup_list = []
 		for symbol in freq_table:
 			symbol_tup_list.append((freq_table[symbol], symbol))
-
+		print "--------------------------------------------------------"
+		print "Symbol list with frequencies:"
 		print symbol_tup_list
 		huff_tree = HuffmanTree(symbol_tup_list)
 		self.codewords = huff_tree.get_codewords()
+		print "Huffman codewords:"
 		print self.codewords
 		self.d_codewords = {self.codewords[key]:key for key in self.codewords}
 		self.message = ''.join(self.codewords[symbol] for symbol in self.symbol_list)
@@ -53,12 +55,15 @@ class SecretMessage:
 
 
 if __name__ == '__main__':
-	obj = SecretMessage("My name is rakshith")
-	key = RSA.generate_key_pair(10)	
+	message = raw_input("Enter the secret text:")
+	obj = SecretMessage(message)
+	key_length = int(raw_input("Enter the key length:"))
+	key = RSA.generate_key_pair(key_length)
+	print "Encrypting message with RSA..."
 	obj.symbol_list = RSA.encrypt(key[0], obj.message)
-
-	# print obj.string_to_binary()
-	print obj.encode()
-	print ''.join(map(chr,RSA.decrypt(key[1], obj.decode())))
-	
-
+	encoded =  obj.encode()
+	print "Huffman encoded message: {}".format(encoded)
+	decoded =  obj.decode()
+	print "Huffman decoded message: {}".format(decoded)
+	print "Decrypting decoded message with RSA..."
+	print ''.join(map(chr,RSA.decrypt(key[1], decoded)))
