@@ -2,7 +2,7 @@ import math
 import random
 def get_primes(lower, upper):
 	primes = []
-	for i in range(lower, upper):
+	for i in xrange(lower, upper):
 		if is_prime(i):
 			# print i
 			primes.append(i)
@@ -17,7 +17,7 @@ def gcd(a, b):
 
 def is_prime(n):
 	flag=0
-	for i in range(2, int(math.sqrt(n))+1):
+	for i in xrange(2, int(math.sqrt(n))+1):
 		if n%i == 0:
 			flag=1
 			break
@@ -26,7 +26,7 @@ def is_prime(n):
 
 
 def relative_prime(a, b):
-	for i in range(2, min(a, b)+1):
+	for i in xrange(2, min(a, b)+1):
 		if a%i == b%i == 0:
 			return False
 
@@ -46,13 +46,15 @@ def ext_euc(e, tot_n):
 		# print q, r, s, t
 		print "{}\t{}\t{}\t{}".format(q,r,t,s)
 	gcd = tot_n
-	print "GCD({},{}) is {}".format(init_e,phi,gcd)
+	# print "GCD({},{}) is {}".format(init_e,phi,gcd)
 	if t<0:
 		t = t+phi
 	return t
 
 
 def generate_key_pair(size):
+	print "Generating Keys...."
+	print "Extended Eucledian Algorithm"
 	min_n = 1 << (size-1)
 	max_n = (1 << size) -1
 	start_range = 1 << (size//2 - 1)
@@ -79,7 +81,12 @@ def generate_key_pair(size):
 		g = gcd(e, tot_n)
 
 	d = ext_euc(e, tot_n)	
+	print "--------------------------------------------------------------------------"
 	print "p and q are {} {}".format(p, q)
+	n = p*q
+	print "Public Key : (e,n) = ({} ,{})".format(e, n)
+	print "Private Key : (d,n) = ({} ,{})".format(d, n)
+	print "--------------------------------------------------------------------------"
 	return ((e,p*q),(d,p*q))
 
 
@@ -93,7 +100,13 @@ def encrypt(key, pt):
 	# if(pt_decimal > n):
 	# 	print "Choose a larger n"
 	# 	return
+	print "Before RSA encryption:"
+	print pt+"\n"
 	cipher_text = [int((pow(ord(char), e))%n) for char in pt]
+	print "After RSA encryption:"
+	print cipher_text
+	print ""
+	print "---------------------------------------------------------------------------"
 	return cipher_text
 # print get_primes(1, 100)
 # print string_to_decimal("AB")
