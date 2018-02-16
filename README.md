@@ -11,9 +11,9 @@ In this project, we have implemented the first module of the paper "Highly Imper
 
 3. RSA.py : This contains the implementation of the RSA Algorithm, which we have used to encrypt the secret text. 
 
-4. secret_message.py : This is wrapper class, which combines all the three above mentioned classes and encrupts and encodes the secret message using the mentioned techniques. 
+4. secret_message.py : This is wrapper class, which combines all the three above mentioned classes and encripts and encodes the secret message using the mentioned techniques. 
 
-5. tests.py : This contains a few test cases to demonstrate the project. Assert sttements have been inserted in suitable places to verify the encryption, decryption, decoding and encoding. 
+5. tests.py : This contains a few test cases to demonstrate the project. Assert statements have been inserted in suitable places to verify the encryption, decryption, decoding and encoding. 
 
 ## System Requirements:
 
