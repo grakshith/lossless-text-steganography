@@ -53,7 +53,7 @@ def ext_euc(e, tot_n):
 
 
 def generate_key_pair(size):
-	print "Generating Keys...."
+	print "Generating Keys of size {} bits".format(size)
 	print "Extended Eucledian Algorithm"
 	min_n = 1 << (size-1)
 	max_n = (1 << size) -1
@@ -80,7 +80,7 @@ def generate_key_pair(size):
 		e = random.randrange(1, tot_n)
 		g = gcd(e, tot_n)
 
-	d = ext_euc(e, tot_n)	
+	d = ext_euc(e, tot_n)
 	print "--------------------------------------------------------------------------"
 	print "p and q are {} {}".format(p, q)
 	n = p*q
@@ -93,16 +93,27 @@ def generate_key_pair(size):
 def string_to_decimal(text):
 	return (''.join(format(ord(c)) for c in text))
 
+def power(x, y, p) :
+    res = 1
+    x = x % p
+    while (y > 0) :
+        if ((y & 1) == 1) :
+            res = (res * x) % p
+        y = y >> 1
+        x = (x * x) % p
+
+    return res
+
 def encrypt(key, pt):
 	e, n = key
 	# pt_decimal = string_to_decimal(pt)
-	
+
 	# if(pt_decimal > n):
 	# 	print "Choose a larger n"
 	# 	return
 	print "Before RSA encryption:"
 	print pt+"\n"
-	cipher_text = [int((pow(ord(char), e))%n) for char in pt]
+	cipher_text = [int(power(ord(char), e, n)) for char in pt]
 	print "After RSA encryption:"
 	print cipher_text
 	print ""
@@ -114,11 +125,11 @@ def encrypt(key, pt):
 
 def decrypt(key, ct):
 	d,n = key
-	plain_text = [int((pow(c,d))%n) for c in ct]
+	plain_text = [int(power(c,d,n)) for c in ct]
 	return plain_text
 
 
 if __name__ == '__main__':
-	key = generate_key_pair(10)	
-	print "Public Key : (e,n) = {}".format(key[0])											
+	key = generate_key_pair(10)
+	print "Public Key : (e,n) = {}".format(key[0])
 	print "Cipher text is {}".format(decrypt(key[1],encrypt(key[0], "aba")))

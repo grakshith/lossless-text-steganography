@@ -28,7 +28,6 @@ class SecretMessage:
 		symbol_tup_list = []
 		for symbol in freq_table:
 			symbol_tup_list.append((freq_table[symbol], symbol))
-		print "--------------------------------------------------------"
 		print "Symbol list with frequencies:"
 		print symbol_tup_list
 		huff_tree = HuffmanTree(symbol_tup_list)
