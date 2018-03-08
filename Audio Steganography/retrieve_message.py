@@ -46,13 +46,13 @@ def pcm_channels(wave_file):
     return channels, sample_rate, hex_channel, raw_data, total_samples
 
 
-def retrieve_message(message_length, channels):
+def retrieve_message(message_length, channels, depth):
     message = ''
     for i in range(message_length):
-        if channels[0][i] % 2 == 0:
-            message+='0'
-        else:
+        if channels[0][i] & (1 << depth-1):
             message+='1'
+        else:
+            message+='0'
 
     return message
 
@@ -62,6 +62,7 @@ if __name__ == '__main__':
     
     filename = 'test.wav'
     channels, sample_rate, hex_channel, raw_data, total_samples = pcm_channels(filename)
-    message_length = 100000
-    retrieve_message(message_length, channels)
+    message_length = 16
+    print channels[0][0:16]
+    print retrieve_message(message_length, channels, 4)
 
