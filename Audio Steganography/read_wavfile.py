@@ -1,9 +1,10 @@
 import wave
 import struct
 import random   
+import math
 
 SHIFT = 32768
-
+EMBEDDING_ERRORS = []
 def pcm_channels(wave_file):
     """Given a file-like object or file path representing a wave file,
     decompose it into its constituent PCM data streams.
@@ -80,6 +81,7 @@ def embed_LSB(channel, message, depth):
     for i in range(len(message)):
         print channel[i]
         if message[i] == '1' and not (channel[i] & (1 << depth-1)):
+            EMBEDDING_ERRORS.append(1)
             print "Setting bit to 1"
             ctr+=1
             channel[i] = set_bit(channel[i], depth-1)
@@ -97,8 +99,10 @@ def embed_LSB(channel, message, depth):
                     else:
                         channel[i] = set_bit(channel[i], d)
 
+
         elif message[i] == '0' and (channel[i] & (1 << depth-1)):
             print "Setting bit to 0"
+            EMBEDDING_ERRORS.append(-1)
             ctr+=1
             channel[i] = clear_bit(channel[i], depth-1)
             if not (channel[i] & (1 << depth-2)):
@@ -113,6 +117,15 @@ def embed_LSB(channel, message, depth):
                         break
                     else:
                         channel[i] = clear_bit(channel[i], d)
+        else:
+            EMBEDDING_ERRORS.append(0)
+        # Embedding error correction
+        # print len(EMBEDDING_ERRORS), i
+        # if len(EMBEDDING_ERRORS) != 0:
+        #     for j in range(1, depth):
+        #         # print i+j
+        #         channel[i+j] += int(math.floor(EMBEDDING_ERRORS[i]/j))
+        #         # print channel[i+1]
     channel = [i-SHIFT for i in channel]
     print "Changed {} bits".format(ctr)
     return channel
@@ -121,10 +134,10 @@ def embed_LSB(channel, message, depth):
 
 
 if __name__ == '__main__':
-    message =  [str(random.randint(0,2)) for x in range(200000)] 
+    # message =  [str(random.randint(0,2)) for x in range(200000)] 
     # message = "1001011111111111111111111111111111111111111111111111111111111111111111111111111111110000000000000000000000000000000000000000000000000001000000000000000000"
-    # message = '0000111100001111'
-    input_file = 'piano2.wav'
+    message = '0000111100001111'
+    input_file = 'male.wav'
     channels, sample_rate, hex_channel, raw_data,total_samples, params = pcm_channels(input_file)
     # print channels[0][0:10]
     new_channel = embed_LSB(channels[0], message, 4)
