@@ -1,6 +1,8 @@
 import wave
 import struct
 import random   
+import cPickle as pickle
+import RSA
 
 def pcm_channels(wave_file):
     """Given a file-like object or file path representing a wave file,
@@ -57,12 +59,35 @@ def retrieve_message(message_length, channels, depth):
     return message
 
 
+def decode(message, d_codewords):
+        i=0
+        j=0
+        decoded = []
+        while i < len(message):
+            if d_codewords.get(message[i:i+j]):
+                decoded.append(d_codewords.get(message[i:i+j]))
+                i=i+j
+                j=0
+            else:
+                j = j+1
+        message = decoded
+        return message
 
 if __name__ == '__main__':
     
-    filename = 'test.wav'
+    filename = 'stego_audio/violin2.wav_stego.wav'
     channels, sample_rate, hex_channel, raw_data, total_samples = pcm_channels(filename)
-    message_length = 16
-    print channels[0][0:16]
-    print retrieve_message(message_length, channels, 4)
+
+    with open('keys','rb') as fp:
+        d_codewords = pickle.load(fp)
+        message_length = pickle.load(fp)
+    
+    # print channels[0][0:16]
+    message = retrieve_message(message_length, channels, 10)
+    decoded = decode(message, d_codewords)
+    with open('RSA_Keys','rb') as fp:
+        key = pickle.load(fp)
+       
+    
+    print ''.join(map(chr,RSA.decrypt(key[1], decoded)))
 
