@@ -1,5 +1,8 @@
 from huffman import HuffmanTree
 import RSA
+import cPickle as pickle
+import read_wavfile
+
 
 class SecretMessage:
 	def __init__(self, message):
@@ -36,6 +39,9 @@ class SecretMessage:
 		print self.codewords
 		self.d_codewords = {self.codewords[key]:key for key in self.codewords}
 		self.message = ''.join(self.codewords[symbol] for symbol in self.symbol_list)
+		with open('keys','wb') as fp:
+			pickle.dump(self.d_codewords,fp)
+			pickle.dump(len(self.message),fp)
 		return self.message
 
 	def decode(self):
@@ -58,9 +64,16 @@ if __name__ == '__main__':
 	obj = SecretMessage(message)
 	key_length = int(raw_input("Enter the key length:"))
 	key = RSA.generate_key_pair(key_length)
+	with open('RSA_Keys','wb') as fp:
+	    pickle.dump(key,fp)
+	   
 	print "Encrypting message with RSA..."
 	obj.symbol_list = RSA.encrypt(key[0], obj.message)
 	encoded =  obj.encode()
+	print "Encoded = "+encoded
+	inp_file = raw_input("Enter audio filename path:")
+
+	read_wavfile.embed_to_file(inp_file, encoded)
 	print "Huffman encoded message: {}".format(encoded)
 	decoded =  obj.decode()
 	print "Huffman decoded message: {}".format(decoded)

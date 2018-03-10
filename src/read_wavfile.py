@@ -1,9 +1,11 @@
 import wave
 import struct
 import random   
+import math
 
 SHIFT = 32768
-
+EMBEDDING_ERRORS = []
+E_N_VALS = [5]
 def pcm_channels(wave_file):
     """Given a file-like object or file path representing a wave file,
     decompose it into its constituent PCM data streams.
@@ -74,12 +76,57 @@ def clear_bit(value, bit):
     return value & ~(1<<bit)
 
 
-def embed_LSB(channel, message, depth):
+# def embed_LSB(channel, message, depth):
+#     channel = [i+SHIFT for i in channel]
+#     ctr=0
+#     for i in range(len(message)):
+#         print channel[i]
+#         if message[i] == '1' and not (channel[i] & (1 << depth-1)):
+#             print "Setting bit to 1"
+#             ctr+=1
+#             channel[i] = set_bit(channel[i], depth-1)
+
+#             if channel[i] & (1 << depth-2):
+#                 for d in range(0, depth-1):
+#                     channel[i] = clear_bit(channel[i], d)
+#             else :
+#                 for d in range(0, depth-1): #0, 1, 2 (last 3 bits)
+#                     channel[i] = set_bit(channel[i], d)
+#                 for d in range(depth, 16): # 4, 5, ....15 
+#                     if channel[i] & (1 << d):
+#                         channel[i] = clear_bit(channel[i], d)
+#                         break
+#                     else:
+#                         channel[i] = set_bit(channel[i], d)
+
+#         elif message[i] == '0' and (channel[i] & (1 << depth-1)):
+#             print "Setting bit to 0"
+#             ctr+=1
+#             channel[i] = clear_bit(channel[i], depth-1)
+#             if not (channel[i] & (1 << depth-2)):
+#                 for d in range(0, depth-1):
+#                     channel[i] = set_bit(channel[i], d)
+#             else:
+#                 for d in range(0, depth-1): #0, 1, 2 (last 3 bits)
+#                     channel[i] = clear_bit(channel[i], d)
+#                 for d in range(depth, 16): # 4, 5, ....15 
+#                     if not (channel[i] & (1 << d)):
+#                         channel[i] = set_bit(channel[i], d)
+#                         break
+#                     else:
+#                         channel[i] = clear_bit(channel[i], d)
+#     channel = [i-SHIFT for i in channel]
+#     print "Changed {} bits".format(ctr)
+#     return channel
+
+
+def embed_LSB(channel, message, depth, E_N):
     channel = [i+SHIFT for i in channel]
     ctr=0
     for i in range(len(message)):
         print channel[i]
         if message[i] == '1' and not (channel[i] & (1 << depth-1)):
+            EMBEDDING_ERRORS.append(E_N)
             print "Setting bit to 1"
             ctr+=1
             channel[i] = set_bit(channel[i], depth-1)
@@ -97,8 +144,10 @@ def embed_LSB(channel, message, depth):
                     else:
                         channel[i] = set_bit(channel[i], d)
 
+
         elif message[i] == '0' and (channel[i] & (1 << depth-1)):
             print "Setting bit to 0"
+            EMBEDDING_ERRORS.append(-E_N)
             ctr+=1
             channel[i] = clear_bit(channel[i], depth-1)
             if not (channel[i] & (1 << depth-2)):
@@ -113,31 +162,53 @@ def embed_LSB(channel, message, depth):
                         break
                     else:
                         channel[i] = clear_bit(channel[i], d)
+        else:
+            EMBEDDING_ERRORS.append(0)
+        # Embedding error correction
+        # print len(EMBEDDING_ERRORS), i
+        if len(EMBEDDING_ERRORS) != 0:
+            for j in range(1, depth):
+                # print i+j
+                # print "EMbeddig error {}".format(EMBEDDING_ERRORS)
+                # print "Before adding: {}".format(channel[i+j])
+                channel[i+j] += int(math.floor(EMBEDDING_ERRORS[i]/j))
+                # print "After adding: {}".format(channel[i+j])
     channel = [i-SHIFT for i in channel]
     print "Changed {} bits".format(ctr)
     return channel
 
+
+
 # print embed_LSB([-9], "1", 4)
+def embed_to_file(input_file, message, E_N=5):
+    channels, sample_rate, hex_channel, raw_data,total_samples, params = pcm_channels(input_file)
+    new_channel = embed_LSB(channels[0], message, 10, E_N)
+    # channels, sample_rate, hex_channel, raw_data,total_samples, params = pcm_channels(input_file)
+    hex_channel = struct.pack('<%ih' % (total_samples/params[0]), *new_channel)
+    write_wav('stego_audio/{}_stego.wav'.format(input_file.split('/')[-1]), hex_channel, input_file)
 
-
+    
 if __name__ == '__main__':
-    message =  [str(random.randint(0,2)) for x in range(200000)] 
+    message =  [str(random.randint(0,2)) for x in range(300000)] 
     # message = "1001011111111111111111111111111111111111111111111111111111111111111111111111111111110000000000000000000000000000000000000000000000000001000000000000000000"
     # message = '0000111100001111'
-    input_file = 'piano2.wav'
+    input_file = 'violin2.wav'
     channels, sample_rate, hex_channel, raw_data,total_samples, params = pcm_channels(input_file)
     # print channels[0][0:10]
-    new_channel = embed_LSB(channels[0], message, 4)
-    # print new_channel[0:100]
-    channels, sample_rate, hex_channel, raw_data,total_samples, params = pcm_channels(input_file)
-    # for i, j in zip(channels[0][0:100], new_channel[0:100]):
-    #     print i, j
-    # for i in range(len(message)):
-    #     if message[i] == '1':
-    #         channels[0][i] |= 1
-    #     else:
-    #         channels[0][i] &= ~1
-    # embed_LSB(channels[0], message)
+    for E_N in E_N_VALS:
+        new_channel = embed_LSB(channels[0], message, 10, E_N)
+        # print new_channel[0:100]
+        channels, sample_rate, hex_channel, raw_data,total_samples, params = pcm_channels(input_file)
+        # for i, j in zip(channels[0][0:100], new_channel[0:100]):
+        #     print i, j
+        # for i in range(len(message)):
+        #     if message[i] == '1':
+        #         channels[0][i] |= 1
+        #     else:
+        #         channels[0][i] &= ~1
+        # embed_LSB(channels[0], message)
 
-    hex_channel = struct.pack('<%ih' % (total_samples/params[0]), *new_channel)
-    write_wav('test.wav', hex_channel, input_file)
+        hex_channel = struct.pack('<%ih' % (total_samples/params[0]), *new_channel)
+
+        write_wav('test_{}.wav'.format(E_N), hex_channel, input_file)
+        EMBEDDING_ERRORS = []
