@@ -40,19 +40,13 @@ def pcm_channels(wave_file):
     for index, value in enumerate(integer_data):
         bucket = index % num_channels
         channels[bucket].append(value)
-    # hex_channel = ([hex(channels[0][i] & (2**16-1)) for i in range(num_frames)])
     hex_channel = struct.pack('<%ih' % (total_samples), *channels[0])
-    # print hex_channel[0:10]
-    # print channels[0]
-    # print channels[0][0:10],'\n',hex_channel[0:10]
     return channels, sample_rate, hex_channel, raw_data, total_samples
 
 
 def retrieve_message(message_length, channels, depth, spread_factor):
     message = ''
     indices = [i for i in range(1, len(channels[0]), spread_factor) ]
-    print spread_factor
-    print indices
     for i in indices[0:message_length]:
         if channels[0][i] & (1 << depth-1):
             message+='1'
@@ -78,19 +72,20 @@ def decode(message, d_codewords):
 
 if __name__ == '__main__':
     
-    filename = 'stego_audio/violin2.wav_stego.wav'
+    filename = raw_input("Enter the stego file name:")
     channels, sample_rate, hex_channel, raw_data, total_samples = pcm_channels(filename)
 
-    with open('keys','rb') as fp:
+    with open('pickled/keys','rb') as fp:
         d_codewords = pickle.load(fp)
         message_length = pickle.load(fp)
         spread_factor = pickle.load(fp)
-    # print channels[0][0:16]
     message = retrieve_message(message_length, channels, 10, spread_factor)
+    print "Message in binary - {}".format(message)
     decoded = decode(message, d_codewords)
-    with open('RSA_Keys','rb') as fp:
+    print "Huffman decoded message - {}".format(decoded)
+    with open('pickled/RSA_Keys','rb') as fp:
         key = pickle.load(fp)
-       
-    
-    print ''.join(map(chr,RSA.decrypt(key[1], decoded)))
+
+    print "After decrypting with RSA"   
+    print "Message - {}".format(''.join(map(chr,RSA.decrypt(key[1], decoded))))
 

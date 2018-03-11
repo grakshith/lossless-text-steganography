@@ -1,5 +1,6 @@
 import math
 import random
+import cPickle as pickle
 def get_primes(lower, upper):
 	primes = []
 	for i in xrange(lower, upper):
@@ -130,6 +131,10 @@ def decrypt(key, ct):
 
 
 if __name__ == '__main__':
-	key = generate_key_pair(10)
-	print "Public Key : (e,n) = {}".format(key[0])
-	print "Cipher text is {}".format(decrypt(key[1],encrypt(key[0], "aba")))
+	print "Enter the key length required in bits"
+	length = int(raw_input())
+	key = generate_key_pair(length)
+	with open('pickled/RSA_Keys', 'wb') as file:
+		pickle.dump(key, file)
+	# print "Public Key : (e,n) = {}".format(key[0])
+	# print "Cipher text is {}".format(decrypt(key[1],encrypt(key[0], "aba")))
