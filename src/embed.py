@@ -25,18 +25,19 @@ def randomize_indices(indices):
     seed = random.randint(0, 100)
     random.seed(seed)
     random.shuffle(indices)
-    with open('keys','a+b') as fp:
+    with open('pickled/keys','a+b') as fp:
         pickle.dump(seed,fp)
     return indices
 
-def embed(indices, message, file_string):
+def embed(indices, message, file_string, filename):
     indices = indices[:len(message)]
     message = list(message)
     file_string = list(file_string)
     null_chars = [' ', u'\u2008']
-    with open('keys','a+b') as fp:
+    with open('pickled/keys','a+b') as fp:
         pickle.dump(null_chars,fp)
-    with io.open('embedded/stego.txt', 'w', encoding='utf-8') as file:
+    filename = filename.replace('/', ' ').replace('.', ' ').split()[-2]
+    with io.open('stego_text/{}.txt'.format(filename), 'w', encoding='utf-8') as file:
         for index,m in zip(indices,message):
             print index
             print m
@@ -60,7 +61,7 @@ def embed_in_text_file(filename, message):
         print "Number of empty characters in the cover text is very small"
         exit(0)
     random_indices = randomize_indices(indices)
-    embed(random_indices, message, file_string)
+    embed(random_indices, message, file_string, filename)
 
 
 
