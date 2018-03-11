@@ -47,7 +47,7 @@ def decode(message, d_codewords):
         return message
 
 if __name__ == '__main__':
-    with open('keys','rb') as fp:
+    with open('pickled/keys','rb') as fp:
         d_codewords = pickle.load(fp)
         message_length = pickle.load(fp)
         seed = pickle.load(fp)
@@ -57,7 +57,7 @@ if __name__ == '__main__':
     print "The retrieved binary message from file is : {}".format(bin_message)
     decoded =  decode(bin_message, d_codewords)
     print "The message after Huffman Decoding is : {}".format(decoded)
-    with open('RSA_Keys','rb') as fp:
+    with open('pickled/RSA_Keys','rb') as fp:
         key = pickle.load(fp)
        
     
