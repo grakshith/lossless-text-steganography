@@ -2,7 +2,7 @@ from huffman import HuffmanTree
 import RSA
 import cPickle as pickle
 import read_wavfile
-
+import embed
 
 class SecretMessage:
 	def __init__(self, message):
@@ -69,8 +69,8 @@ if __name__ == '__main__':
 	encoded =  obj.encode()
 	print "Encoded = "+encoded
 	inp_file = raw_input("Enter audio filename path:")
-
-	read_wavfile.embed_to_file(inp_file, encoded)
+	embed.embed_in_text_file(inp_file, encoded)
+	# read_wavfile.embed_to_file(inp_file, encoded)
 	print "Huffman encoded message: {}".format(encoded)
 	# decoded =  obj.decode()
 	# print "Huffman decoded message: {}".format(decoded)
