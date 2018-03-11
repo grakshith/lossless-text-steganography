@@ -3,6 +3,8 @@ import random
 import struct
 import io
 from fpdf import FPDF
+import cPickle as pickle
+
 
 def get_spaces(filename):
     i = 0
@@ -20,14 +22,20 @@ def get_spaces(filename):
 
 
 def randomize_indices(indices):
-    random.seed(60)
+    seed = random.randint(0, 100)
+    random.seed(seed)
     random.shuffle(indices)
+    with open('keys','a+b') as fp:
+        pickle.dump(seed,fp)
     return indices
 
 def embed(indices, message, file_string):
     indices = indices[:len(message)]
     message = list(message)
     file_string = list(file_string)
+    null_chars = [' ', u'\u2008']
+    with open('keys','a+b') as fp:
+        pickle.dump(null_chars,fp)
     with io.open('embedded/stego.txt', 'w', encoding='utf-8') as file:
         for index,m in zip(indices,message):
             print index
@@ -44,12 +52,15 @@ def embed(indices, message, file_string):
             # print type(x.decode('utf-8'))
             file.write(x.decode('utf-8'))
             s += x.decode('ISO-8859-1')
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_xy(0, 0)
-    pdf.set_font('arial', 'B', 13.0)
-    pdf.multi_cell(h=5.0, align='L', w=0, txt=s, border=0)
-    pdf.output('embedded/pdf.pdf', 'F')
+    
+    
+def embed_in_text_file(filename, message):
+    indices, file_string = get_spaces(filename)
+    if len(indices)<len(message):
+        print "Number of empty characters in the cover text is very small"
+        exit(0)
+    random_indices = randomize_indices(indices)
+    embed(random_indices, message, file_string)
 
 
 
