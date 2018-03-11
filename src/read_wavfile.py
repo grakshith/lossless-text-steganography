@@ -2,7 +2,7 @@ import wave
 import struct
 import random   
 import math
-
+import cPickle as pickle
 SHIFT = 32768
 EMBEDDING_ERRORS = []
 E_N_VALS = [5]
@@ -122,46 +122,54 @@ def clear_bit(value, bit):
 
 def embed_LSB(channel, message, depth, E_N):
     channel = [i+SHIFT for i in channel]
+    i=0
+    spread_factor = len(channel)/len(message)
+    with open('keys','a+b') as fp:
+            pickle.dump(spread_factor,fp)
+    print spread_factor, len(channel)
+    indices = [i for i in range(1, len(channel), spread_factor) ]
+    print indices[0:50]
+    
     ctr=0
-    for i in range(len(message)):
-        print channel[i]
-        if message[i] == '1' and not (channel[i] & (1 << depth-1)):
+    for i, index in zip(range(len(message)), indices[0:len(message)]):
+        print channel[index]
+        if message[i] == '1' and not (channel[index] & (1 << depth-1)):
             EMBEDDING_ERRORS.append(E_N)
             print "Setting bit to 1"
             ctr+=1
-            channel[i] = set_bit(channel[i], depth-1)
+            channel[index] = set_bit(channel[index], depth-1)
 
-            if channel[i] & (1 << depth-2):
+            if channel[index] & (1 << depth-2):
                 for d in range(0, depth-1):
-                    channel[i] = clear_bit(channel[i], d)
+                    channel[index] = clear_bit(channel[index], d)
             else :
                 for d in range(0, depth-1): #0, 1, 2 (last 3 bits)
-                    channel[i] = set_bit(channel[i], d)
+                    channel[index] = set_bit(channel[index], d)
                 for d in range(depth, 16): # 4, 5, ....15 
-                    if channel[i] & (1 << d):
-                        channel[i] = clear_bit(channel[i], d)
+                    if channel[index] & (1 << d):
+                        channel[index] = clear_bit(channel[index], d)
                         break
                     else:
-                        channel[i] = set_bit(channel[i], d)
+                        channel[index] = set_bit(channel[index], d)
 
 
-        elif message[i] == '0' and (channel[i] & (1 << depth-1)):
+        elif message[i] == '0' and (channel[index] & (1 << depth-1)):
             print "Setting bit to 0"
             EMBEDDING_ERRORS.append(-E_N)
             ctr+=1
-            channel[i] = clear_bit(channel[i], depth-1)
-            if not (channel[i] & (1 << depth-2)):
+            channel[index] = clear_bit(channel[index], depth-1)
+            if not (channel[index] & (1 << depth-2)):
                 for d in range(0, depth-1):
-                    channel[i] = set_bit(channel[i], d)
+                    channel[index] = set_bit(channel[index], d)
             else:
                 for d in range(0, depth-1): #0, 1, 2 (last 3 bits)
-                    channel[i] = clear_bit(channel[i], d)
+                    channel[index] = clear_bit(channel[index], d)
                 for d in range(depth, 16): # 4, 5, ....15 
-                    if not (channel[i] & (1 << d)):
-                        channel[i] = set_bit(channel[i], d)
+                    if not (channel[index] & (1 << d)):
+                        channel[index] = set_bit(channel[index], d)
                         break
                     else:
-                        channel[i] = clear_bit(channel[i], d)
+                        channel[index] = clear_bit(channel[index], d)
         else:
             EMBEDDING_ERRORS.append(0)
         # Embedding error correction
@@ -171,7 +179,7 @@ def embed_LSB(channel, message, depth, E_N):
                 # print i+j
                 # print "EMbeddig error {}".format(EMBEDDING_ERRORS)
                 # print "Before adding: {}".format(channel[i+j])
-                channel[i+j] += int(math.floor(EMBEDDING_ERRORS[i]/j))
+                channel[index+j] += int(math.floor(EMBEDDING_ERRORS[i]/j))
                 # print "After adding: {}".format(channel[i+j])
     channel = [i-SHIFT for i in channel]
     print "Changed {} bits".format(ctr)
@@ -189,10 +197,10 @@ def embed_to_file(input_file, message, E_N=5):
 
     
 if __name__ == '__main__':
-    message =  [str(random.randint(0,2)) for x in range(300000)] 
+    # message =  [str(random.randint(0,2)) for x in range(300000)] 
     # message = "1001011111111111111111111111111111111111111111111111111111111111111111111111111111110000000000000000000000000000000000000000000000000001000000000000000000"
     # message = '0000111100001111'
-    input_file = 'violin2.wav'
+    input_file = 'cover_audio/violin2.wav'
     channels, sample_rate, hex_channel, raw_data,total_samples, params = pcm_channels(input_file)
     # print channels[0][0:10]
     for E_N in E_N_VALS:

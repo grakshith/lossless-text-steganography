@@ -48,9 +48,12 @@ def pcm_channels(wave_file):
     return channels, sample_rate, hex_channel, raw_data, total_samples
 
 
-def retrieve_message(message_length, channels, depth):
+def retrieve_message(message_length, channels, depth, spread_factor):
     message = ''
-    for i in range(message_length):
+    indices = [i for i in range(1, len(channels[0]), spread_factor) ]
+    print spread_factor
+    print indices
+    for i in indices[0:message_length]:
         if channels[0][i] & (1 << depth-1):
             message+='1'
         else:
@@ -81,9 +84,9 @@ if __name__ == '__main__':
     with open('keys','rb') as fp:
         d_codewords = pickle.load(fp)
         message_length = pickle.load(fp)
-    
+        spread_factor = pickle.load(fp)
     # print channels[0][0:16]
-    message = retrieve_message(message_length, channels, 10)
+    message = retrieve_message(message_length, channels, 10, spread_factor)
     decoded = decode(message, d_codewords)
     with open('RSA_Keys','rb') as fp:
         key = pickle.load(fp)
