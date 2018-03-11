@@ -60,6 +60,8 @@ class SecretMessage:
 
 
 if __name__ == '__main__':
+	print "Enter\n1 : For Audio Steganography\n2 : For Text Steganography"
+	choice = int(raw_input())
 	message = raw_input("Enter the secret text:")
 	obj = SecretMessage(message)
 	with open('pickled/RSA_Keys', 'rb') as file:
@@ -68,9 +70,13 @@ if __name__ == '__main__':
 	obj.symbol_list = RSA.encrypt(key[0], obj.message)
 	encoded =  obj.encode()
 	print "Encoded = "+encoded
-	inp_file = raw_input("Enter audio filename path:")
-	embed.embed_in_text_file(inp_file, encoded)
-	# read_wavfile.embed_to_file(inp_file, encoded)
+	if choice == 1: 
+		inp_file = raw_input("Enter path of cover audio file:")
+		read_wavfile.embed_to_file(inp_file, encoded)
+	if choice == 2:
+		inp_file = raw_input("Enter path of cover text:")
+		embed.embed_in_text_file(inp_file, encoded)
+	
 	print "Huffman encoded message: {}".format(encoded)
 	# decoded =  obj.decode()
 	# print "Huffman decoded message: {}".format(decoded)
