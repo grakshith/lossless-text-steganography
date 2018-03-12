@@ -15,6 +15,15 @@ In this project, we have implemented the first module of the paper "Highly Imper
 
 5. tests.py : This contains a few test cases to demonstrate the project. Assert statements have been inserted in suitable places to verify the encryption, decryption, decoding and encoding. 
 
+6. embed.py : This file contains functions to embed secret message in a cover text file and writes to new stego text file. 
+
+7. deembed_text.py : This contains functions to retrieve the secret message from the stego text file. 
+
+8. read_wavfile.py : This file reads a cover audio wav file and embeds the secret message in the kth LSB of the audio.
+
+9. retrieve_message.py : This file reads the stego audio file and recovers the secret message from it. 
+
+
 ## System Requirements:
 
 1. Python 2.7 installed
