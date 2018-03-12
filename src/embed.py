@@ -39,15 +39,13 @@ def embed(indices, message, file_string, filename):
     filename = filename.replace('/', ' ').replace('.', ' ').split()[-2]
     with io.open('stego_text/{}.txt'.format(filename), 'w', encoding='utf-8') as file:
         for index,m in zip(indices,message):
-            print index
-            print m
             if(m=="1"):
                 file_string[index] = u'\u2008'.encode('utf-8')
             
             
         # file.write(''.join(file_string).encode('ascii'))
         # file_string = ''.join(file_string)
-        print file_string
+
         s=u''
         for x in file_string:
             # print type(x.decode('utf-8'))
