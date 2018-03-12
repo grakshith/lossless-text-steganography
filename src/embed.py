@@ -2,7 +2,6 @@ import sys
 import random
 import struct
 import io
-from fpdf import FPDF
 import cPickle as pickle
 
 
