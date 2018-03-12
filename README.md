@@ -61,6 +61,11 @@ In this project, we have implemented the papers
 8. Sender: Huffman(RSA(PlainText))
 9. receiver: RSA_D(Huffman_D(CipherText))
 
+
+## Demo
+
+For a complete demo of the project, run `test_audio.sh` for audio steganography and `test_text.sh` for text steganography.
+
 ## Usage: 
 
 1. Run the command 'python secret_message.py' in the project root directory
@@ -68,3 +73,6 @@ In this project, we have implemented the papers
 3. Choose 1 or 2 for text/audio steganography
 4. Enter path of file
 5. Run deembed_text.py / retrieve_message.py to recover the message
+
+
+
