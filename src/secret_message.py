@@ -1,5 +1,8 @@
 from huffman import HuffmanTree
 import RSA
+import cPickle as pickle
+import read_wavfile
+import embed
 
 class SecretMessage:
 	def __init__(self, message):
@@ -36,6 +39,9 @@ class SecretMessage:
 		print self.codewords
 		self.d_codewords = {self.codewords[key]:key for key in self.codewords}
 		self.message = ''.join(self.codewords[symbol] for symbol in self.symbol_list)
+		with open('pickled/keys','wb') as fp:
+			pickle.dump(self.d_codewords,fp)
+			pickle.dump(len(self.message),fp)
 		return self.message
 
 	def decode(self):
@@ -54,15 +60,25 @@ class SecretMessage:
 
 
 if __name__ == '__main__':
+	print "Enter\n1 : For Audio Steganography\n2 : For Text Steganography"
+	choice = int(raw_input())
 	message = raw_input("Enter the secret text:")
 	obj = SecretMessage(message)
-	key_length = int(raw_input("Enter the key length:"))
-	key = RSA.generate_key_pair(key_length)
+	with open('pickled/RSA_Keys', 'rb') as file:
+		key = pickle.load(file)
 	print "Encrypting message with RSA..."
 	obj.symbol_list = RSA.encrypt(key[0], obj.message)
 	encoded =  obj.encode()
+	print "Encoded = "+encoded
+	if choice == 1: 
+		inp_file = raw_input("Enter path of cover audio file:")
+		read_wavfile.embed_to_file(inp_file, encoded)
+	if choice == 2:
+		inp_file = raw_input("Enter path of cover text:")
+		embed.embed_in_text_file(inp_file, encoded)
+	
 	print "Huffman encoded message: {}".format(encoded)
-	decoded =  obj.decode()
-	print "Huffman decoded message: {}".format(decoded)
-	print "Decrypting decoded message with RSA..."
-	print ''.join(map(chr,RSA.decrypt(key[1], decoded)))
+	# decoded =  obj.decode()
+	# print "Huffman decoded message: {}".format(decoded)
+	# print "Decrypting decoded message with RSA..."
+	# print ''.join(map(chr,RSA.decrypt(key[1], decoded)))
