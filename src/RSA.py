@@ -114,12 +114,25 @@ def encrypt(key, pt):
 	# 	return
 	print "Before RSA encryption:"
 	print pt+"\n"
-	cipher_text = [int(power(ord(char), e, n)) for char in pt]
+	message_list = list(pt)
+	bigram_list = []
+	while len(message_list)>1:
+		a = message_list.pop(0)
+		b = message_list.pop(0)
+		bigram_list.append("{}{}".format(ord(a),ord(b)))
+	if len(message_list)>0:
+		bigram_list.append(ord(message_list.pop()))
+	# bigram_list = ['{}{}'.format(pt[i],pt[i+1]) for i in range(0,len(pt)+offset,2)]
+	print bigram_list
+	# cipher_text = [int(power(ord(char), e, n)) for char in pt]
+	bigram_cipher_text = [int(power(int(char), e, n)) for char in bigram_list]
 	print "After RSA encryption:"
-	print cipher_text
+	# print cipher_text
+	print bigram_cipher_text
 	print ""
 	print "---------------------------------------------------------------------------"
-	return cipher_text
+	# return cipher_text
+	return bigram_cipher_text
 # print get_primes(1, 100)
 # print string_to_decimal("AB")
 
@@ -127,7 +140,29 @@ def encrypt(key, pt):
 def decrypt(key, ct):
 	d,n = key
 	plain_text = [int(power(c,d,n)) for c in ct]
-	return plain_text
+	print plain_text
+	plain_text = map(str,plain_text)
+	decrypted = []
+	for number in plain_text:
+		if len(number)<4:
+			decrypted.append(number)
+			continue
+		if len(number) == 4:
+			first = number[0:2]
+			second = number[2:4]
+		elif len(number) == 6:
+			first = number[0:3]
+			second = number[3:6]
+		elif len(number) == 5:
+			if(number[0]=='1'):
+				first = number[0:3]
+				second = number[3:5]
+			else:
+				first = number[0:2]
+				second = number[2:5]
+		decrypted.append(first)
+		decrypted.append(second)
+	return map(int,decrypted)
 
 
 if __name__ == '__main__':
