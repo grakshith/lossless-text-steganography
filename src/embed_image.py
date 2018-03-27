@@ -6,6 +6,12 @@ import numpy as np
 def get_message_from_image(imname):
 	image = cv2.imread(imname)
 	print image.shape
+
+	with open('pickled/keys_imsteg', 'w') as fp:
+		fp.write(str(image.shape[0])+'\n')
+		fp.write(str(image.shape[1])+'\n')
+		fp.write(str(image.shape[2])+'\n')
+
 	image = np.reshape(image, (image.shape[0]*image.shape[1]*image.shape[2]))
 	print image.shape
 	return image
@@ -69,9 +75,11 @@ def embed_in_image(image, sec_image):
 	# image = np.array(image)
 	# print image.shape
 	# image = np.reshape(image, (50, 50, 3))
-
+	print "The stego image saved as cover_video/stego_"+image.split('/')[-1]
 	cv2.imwrite('cover_video/stego_'+image.split('/')[-1], frame)
 # print '1001001001110101101'
 
 if __name__ == '__main__':
-	embed_in_image('cover_video/bird1.png', 'cover_video/icon_1.png')
+	cov_im = raw_input("Enter the path of cover image: \n")
+	sec_im = raw_input("Enter the path of secret image: \n")
+	embed_in_image(cov_im, sec_im)

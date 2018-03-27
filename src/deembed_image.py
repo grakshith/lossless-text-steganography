@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 # exit(0)
-def deembed(imname):
+def deembed(imname, size):
 	ctr=0
 	flag=0
 	message = ''
@@ -33,7 +33,7 @@ def deembed(imname):
 					message+='0'
 				ctr+=1
 				
-				if ctr==60000:
+				if ctr==size[0]*size[1]*size[2]*8:
 					flag=1
 					break
 			if flag==1:
@@ -50,9 +50,20 @@ def deembed(imname):
 	print image[0:10]
 	image = np.array(image)
 	print image.shape
-	image = np.reshape(image, (50, 50, 3))
+	image = np.reshape(image, size)
 	print image.shape
+	print "The secret image has been saved as cover_video/secret_image.png"
 	cv2.imwrite('cover_video/secret_image.png', image)
 
 if __name__ == '__main__':
-	deembed('cover_video/stego_bird1.png')
+	with open('pickled/keys_imsteg', 'r') as fp:
+		# size = ()
+		a = fp.read()
+		a = a.split('\n')
+		size = (int(a[0]) ,int(a[1]), int(a[2]))
+		print size
+		# exit(0)
+		# fp.write(str(image.shape[1])+'\n')
+		# fp.write(str(image.shape[2])+'\n')
+	steg_im = raw_input("Enter the path of stego image: \n")
+	deembed(steg_im, size)
