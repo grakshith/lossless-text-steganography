@@ -2,6 +2,8 @@ import socket
 import sys
 import time
 import threading
+import os
+from ctypes import c_int32
 
 class Client(threading.Thread):    
     def connect(self,host,port):
@@ -30,12 +32,17 @@ class Client(threading.Thread):
             if filename=='':
                 continue
             print "Sending file {}\n".format(filename)
+            filesize = os.path.getsize(filename)
+            filesize = c_int32(filesize)
+            self.client(host,port,filesize)
+            filenamesize = c_int32(len(filename))
+            self.client(host,port,filenamesize)
             self.client(host,port,filename)
             with open(filename, 'rb') as f:
-                chunk = f.read(4096)
+                chunk = f.read(1024)
                 while chunk:
                     self.client(host,port,chunk)
-                    chunk = f.read(4096)
+                    chunk = f.read(1024)
             print "Sent\n"
         return(1)
 
