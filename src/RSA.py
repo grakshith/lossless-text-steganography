@@ -1,6 +1,7 @@
 import math
 import random
 import cPickle as pickle
+import json
 def get_primes(lower, upper):
 	primes = []
 	for i in xrange(lower, upper):
@@ -171,5 +172,7 @@ if __name__ == '__main__':
 	key = generate_key_pair(length)
 	with open('pickled/RSA_Keys', 'wb') as file:
 		pickle.dump(key, file)
+	with open('pickled/RSA_Key_Pub', 'w') as file:
+		file.write(json.dumps(key[0]))
 	# print "Public Key : (e,n) = {}".format(key[0])
 	# print "Cipher text is {}".format(decrypt(key[1],encrypt(key[0], "aba")))
