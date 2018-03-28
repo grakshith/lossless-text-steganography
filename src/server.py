@@ -31,6 +31,7 @@ class Server(threading.Thread):
             filename = filename.split('/')[1]
             data_read=1024
             chunks = filesize/1024
+            print chunks
             with open('received/{}'.format(filename),'wb',1024) as f:
                 chunks_written=0
                 while chunks_written<chunks:
@@ -39,8 +40,10 @@ class Server(threading.Thread):
                     # print chunk
                     # chunk = clientname.recv(1024)
                     chunks_written+=1
-                chunk = clientname.recv(filesize%1024)
-                f.write(chunk)
+                    print "bytes written so far = {}".format(chunks_written*1024)
+                if filesize>1024:
+                    chunk = clientname.recv(filesize%1024)
+                    f.write(chunk)
                 f.flush()
             if chunk=='':
                 break

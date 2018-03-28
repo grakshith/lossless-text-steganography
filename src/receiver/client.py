@@ -39,10 +39,10 @@ class Client(threading.Thread):
             self.client(host,port,filenamesize)
             self.client(host,port,filename)
             with open(filename, 'rb') as f:
-                chunk = f.read(1024)
+                chunk = f.read(4096)
                 while chunk:
                     self.client(host,port,chunk)
-                    chunk = f.read(1024)
+                    chunk = f.read(4096)
             print "Sent\n"
         return(1)
 
