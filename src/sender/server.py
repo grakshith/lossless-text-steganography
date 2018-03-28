@@ -32,7 +32,7 @@ class Server(threading.Thread):
             filename = filename.split('/')[1]
             chunks = filesize/4096
             print chunks
-            with open('received/{}'.format(filename),'wb',4096) as f:
+            with open('pickled/{}'.format(filename),'wb',4096) as f:
                 chunks_written=0
                 while chunks_written<chunks:
                     chunk=clientname.recv(4096)

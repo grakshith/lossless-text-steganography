@@ -5,7 +5,7 @@ import numpy as np
 
 def get_message_from_image(imname):
 	image = cv2.imread(imname)
-	print image.shape
+	print "Reading secret image of dimension ",image.shape
 
 	with open('pickled/keys_imsteg', 'w') as fp:
 		fp.write(str(image.shape[0])+'\n')
@@ -13,7 +13,7 @@ def get_message_from_image(imname):
 		fp.write(str(image.shape[2])+'\n')
 
 	image = np.reshape(image, (image.shape[0]*image.shape[1]*image.shape[2]))
-	print image.shape
+	# print image.shape
 	return image
 
 def set_bit(value, bit):
@@ -30,15 +30,19 @@ def embed_in_image(image, sec_image):
 	message = ''
 
 	frame = cv2.imread(image)
+
 	# print frame[0][0][:]
 	image_bin = get_message_from_image(sec_image)
-	print image_bin[0:10]
+	# print image_bin[0:10]
 	# exit(0)
 	message = ''
 	for i in image_bin:
 		message+='{0:08b}'.format(i)
-	print len(message)
-
+	print "No of bits to be embedded is ",len(message)
+	is_possible =  len(message)<(frame.shape[0]*frame.shape[1]*frame.shape[2])
+	if not is_possible:
+		print "Cannot embed! Please use a larger cover image."
+		return
 
 	flag=0
 	# print ctr
@@ -48,13 +52,13 @@ def embed_in_image(image, sec_image):
 			for k in range(frame.shape[2]):
 				# if k==0:
 				if message[ctr] == '1':
-					print "changing ",frame[i][j][k], 'to 1' 
+					# print "changing ",frame[i][j][k], 'to 1' 
 					frame[i][j][k] = set_bit(frame[i][j][k], 0)
-					print frame[i][j][k], 'at ',i, j, k
+					# print frame[i][j][k], 'at ',i, j, k
 				else:
-					print "changing ",frame[i][j][k], 'to'
+					# print "changing ",frame[i][j][k], 'to'
 					frame[i][j][k] = clear_bit(frame[i][j][k], 0)
-					print frame[i][j][k], 'at ',i, j, k
+					# print frame[i][j][k], 'at ',i, j, k
 				ctr+=1
 				
 				if ctr==len(message):

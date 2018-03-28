@@ -43,6 +43,7 @@ class Client(threading.Thread):
                 bytes_sent = 0
                 while chunk:
                     self.client(host,port,chunk)
+                    time.sleep(0.1)
                     print "bytes sent = {}".format(bytes_sent)
                     chunk = f.read(4096)
                     bytes_sent += len(chunk)
