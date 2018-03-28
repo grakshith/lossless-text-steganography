@@ -42,7 +42,7 @@ class Server(threading.Thread):
                     chunks_written+=1
                     print "bytes written so far = {},{}".format(chunks_written*4096,chunks_written)
                     f.flush()
-                    time.sleep(0.005)
+                    time.sleep(0.2)
                 chunk = clientname.recv(4096)
                 print "Writing the last chunk"
                 if(len(chunk)+chunks_written*4096>filesize):

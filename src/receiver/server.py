@@ -40,13 +40,13 @@ class Server(threading.Thread):
                     # print chunk
                     # chunk = clientname.recv(1024)
                     chunks_written+=1
-                    print "bytes written so far = {},{}".format(chunks_written*4096,chunks_written)
+                    print "bytes written so far = {},{}".format(chunks_written*4096, chunks_written)
                     f.flush()
-                    time.sleep(0.005)
-                chunk = clientname.recv(4096)
+                    time.sleep(0.2)
+                chunk = clientname.recv(filesize%4096)
                 print "Writing the last chunk"
-                if(len(chunk)+chunks_written*4096>filesize):
-                    chunk = chunk[:filesize- chunks_written*4096 ]
+                # if(len(chunk)+chunks_written*4096>filesize):
+                #     chunk = chunk[:filesize- chunks_written*4096 ]
                 f.write(chunk)
                 f.flush()
             if chunk=='':
