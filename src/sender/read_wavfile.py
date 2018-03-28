@@ -70,6 +70,7 @@ def embed_LSB(channel, message, depth, E_N):
     ctr=0
     for i, index in zip(range(len(message)), indices[0:len(message)]):
         if message[i] == '1' and not (channel[index] & (1 << depth-1)):
+            old_channel = channel[index]
             EMBEDDING_ERRORS.append(E_N)
             ctr+=1
             channel[index] = set_bit(channel[index], depth-1)
@@ -86,9 +87,11 @@ def embed_LSB(channel, message, depth, E_N):
                         break
                     else:
                         channel[index] = set_bit(channel[index], d)
+            print "Changing {0} ({0:016b}) to {1} ({1:016b})".format(old_channel,channel[index])
 
 
         elif message[i] == '0' and (channel[index] & (1 << depth-1)):
+            old_channel = channel[index]
             EMBEDDING_ERRORS.append(-E_N)
             ctr+=1
             channel[index] = clear_bit(channel[index], depth-1)
@@ -104,6 +107,7 @@ def embed_LSB(channel, message, depth, E_N):
                         break
                     else:
                         channel[index] = clear_bit(channel[index], d)
+            print "Changing {0} ({0:016b}) to {1} ({1:016b})".format(old_channel,channel[index])
         else:
             EMBEDDING_ERRORS.append(0)
         if len(EMBEDDING_ERRORS) != 0:
